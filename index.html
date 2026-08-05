@@ -174,13 +174,15 @@ function App() {
   });
   const set = (k, patch) => setF((p) => ({ ...p, [k]: { ...p[k], ...patch } }));
 
-  // default the destination to a present one once data loads
+  // land on the destination with the most outbound flights from `from`
   useEffect(() => {
-    if (present.length && !present.includes(to)) {
-      const firstDest = present.find(a => a !== home) || present[0];
-      setTo(firstDest);
-    }
-  }, [present]);
+    if (!flights.length) return;
+    if (flights.some(fl => fl.origin === from && fl.dest === to)) return;
+    const counts = {};
+    flights.forEach(fl => { if (fl.origin === from) counts[fl.dest] = (counts[fl.dest] || 0) + 1; });
+    const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    if (best) setTo(best[0]);
+  }, [flights, from]);
 
   const results = useMemo(() => {
     const paths = findPaths(flights, from, to, { ...f, maxLegs });
