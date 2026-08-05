@@ -4,368 +4,296 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#EDF0F4" />
 <title>AYCF — קונסולת חיפוש</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-<script src="https://cdn.tailwindcss.com"></script>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-  html,body,#root{height:100%}
-  body{margin:0;background:#EDF0F4}
-  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+  :root{
+    --paper:#EDF0F4; --card:#fff; --ink:#141B2D; --muted:#6B7689;
+    --line:#D3D9E2; --wizz:#C6007E; --live:#0F7A6C; --warn:#B5761A; --warnBg:#FBF1DF;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --disp:'Barlow Condensed','Arial Narrow',sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+       -webkit-font-smoothing:antialiased}
+  .wrap{max-width:540px;margin:0 auto;padding:16px}
+  .eyebrow{font-size:11px;letter-spacing:.18em;color:var(--wizz);font-family:var(--mono)}
+  h1{font-family:var(--disp);font-size:40px;line-height:1;margin:2px 0}
+  .sub{font-size:13px;color:var(--muted)}
+  .row{display:flex;gap:8px}
+  .mb4{margin-bottom:16px}.mb2{margin-bottom:8px}
+  .seg{flex:1;padding:9px 0;border-radius:10px;font-size:13px;font-weight:600;
+       background:transparent;color:var(--muted);border:1px solid var(--line);cursor:pointer;text-align:center}
+  .seg.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  label.fld{flex:1}
+  .fld .lab{font-size:11px;color:var(--muted);margin-bottom:4px}
+  select{width:100%;padding:9px;border-radius:10px;background:var(--card);
+         border:1px solid var(--line);font-family:var(--mono);font-size:14px;color:var(--ink)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .panel h2{font-family:var(--disp);font-size:22px;margin:0}
+  .flt{padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+  .flt .txt{flex:1;min-width:0}
+  .flt .lbl{font-weight:600;font-size:14px}
+  .flt .hint{font-size:12px;color:var(--muted)}
+  .flt .extra{width:100%;margin-top:10px}
+  .sw{position:relative;width:40px;height:22px;border-radius:99px;background:var(--line);
+      border:none;flex-shrink:0;cursor:pointer;transition:background .15s}
+  .sw.on{background:var(--wizz)}
+  .sw i{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:99px;
+        background:#fff;transition:left .15s}
+  .sw.on i{left:21px}
+  input[type=range]{width:100%;accent-color:var(--wizz)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{flex:1 0 42px;padding:9px 0;border-radius:9px;font-family:var(--mono);font-size:13px;
+        background:transparent;color:var(--muted);border:1px solid var(--line);cursor:pointer}
+  .chip.on{background:var(--wizz);color:#fff;border-color:var(--wizz)}
+  .chip.ink.on{background:var(--ink);border-color:var(--ink)}
+  .strip{margin-bottom:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+         display:flex;background:var(--card)}
+  .strip .bar{width:6px;background:var(--live)}
+  .strip.multi .bar{background:var(--warn)}
+  .strip .in{flex:1;padding:12px;direction:ltr}
+  .leg{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .leg .od{display:flex;gap:8px;align-items:baseline}
+  .leg .ap{font-family:var(--disp);font-size:26px;line-height:1}
+  .leg .ar{color:var(--muted)}
+  .leg .tm{font-family:var(--mono);font-weight:600;font-size:14px;text-align:right}
+  .leg .meta{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+  .lay{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:11px;color:var(--muted);font-family:var(--mono)}
+  .lay .ln{flex:1;border-top:1px dashed var(--line)}
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;
+        padding-top:8px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .foot .acts{display:flex;gap:10px;align-items:center}
+  .book{color:#fff;background:var(--wizz);padding:4px 11px;border-radius:7px;font-weight:600;text-decoration:none}
+  .cal{color:var(--wizz);font-weight:600;text-decoration:none}
+  .tag{font-size:11px;color:var(--muted);font-family:var(--mono);margin:10px 0 4px}
+  .note{background:var(--warnBg);color:var(--warn);font-size:12px;padding:10px;border-radius:9px}
+  .empty{background:var(--warnBg);border:1px solid rgba(181,118,26,.2);font-size:13px;padding:16px;border-radius:12px}
+  .count{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:11px;font-family:var(--mono);padding:20px 0}
+  a{color:inherit}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel" data-presets="react">
-const { useState, useMemo, useEffect } = React;
+<div class="wrap" id="app"><p style="color:var(--muted);text-align:center;padding:40px">טוען…</p></div>
+<script>
+"use strict";
+var BOOK_URL = "https://multipass.wizzair.com/w6/subscriptions/spa/private-page/wallets";
+var DEF_AIRPORTS = {TLV:"תל אביב",FCO:"רומא",BUD:"בודפשט",ATH:"אתונה",MXP:"מילאנו",
+  LCA:"לרנקה",OTP:"בוקרשט",SOF:"סופיה",KRK:"קרקוב",KTW:"קטוביץ",WAW:"ורשה",
+  GDN:"גדנסק",NAP:"נאפולי",CDG:"פריז",BCN:"ברצלונה",VIE:"וינה"};
+var HOURS = function(ms){return ms/36e5;};
+var esc = function(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};
 
-const C = { paper:"#EDF0F4", card:"#FFFFFF", ink:"#141B2D", muted:"#6B7689",
-  line:"#D3D9E2", wizz:"#C6007E", live:"#0F7A6C", warn:"#B5761A", warnBg:"#FBF1DF" };
-const MONO = "'IBM Plex Mono', ui-monospace, monospace";
-const DISPLAY = "'Barlow Condensed', 'Arial Narrow', sans-serif";
-const BODY = "'Inter', system-ui, sans-serif";
-const BOOK_URL = "https://multipass.wizzair.com/w6/subscriptions/spa/private-page/wallets";
-const DEFAULT_AIRPORTS = { TLV:"תל אביב", FCO:"רומא", BUD:"בודפשט", ATH:"אתונה",
-  MXP:"מילאנו", LCA:"לרנקה", OTP:"בוקרשט", SOF:"סופיה", KRK:"קרקוב", KTW:"קטוביץ",
-  WAW:"ורשה", GDN:"גדנסק", NAP:"נאפולי", CDG:"פריז", BCN:"ברצלונה", VIE:"וינה" };
+var S = {
+  data:null, err:false, mode:"out", from:"TLV", to:"BUD", maxLegs:2,
+  f:{ departWindow:{on:false,from:6,to:22}, weekend:{on:false},
+      connection:{on:true,min:3,max:30}, noOvernight:{on:false},
+      directFirst:{on:true}, returnRequired:{on:false}, stay:{on:false,days:[1,2,3]} }
+};
 
-const HOURS = (ms) => ms / 36e5;
+function fmtTime(d){return d.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});}
+function fmtDay(d){return d.toLocaleDateString("he-IL",{weekday:"short",day:"numeric",month:"numeric"});}
+function airports(){return (S.data&&S.data.airports)||DEF_AIRPORTS;}
+function apName(c){return airports()[c]||c;}
 
-function findPaths(flights, origin, dest, f) {
-  const byOrigin = {};
-  flights.forEach((fl) => (byOrigin[fl.origin] = byOrigin[fl.origin] || []).push(fl));
-  Object.values(byOrigin).forEach((a) => a.sort((x, y) => x.depart - y.depart));
-  const out = [];
-  const walk = (here, chain, seen) => {
-    for (const l of byOrigin[here] || []) {
-      if (seen.has(l.dest)) continue;
-      if (chain.length) {
-        const gap = HOURS(l.depart - chain[chain.length - 1].arrive);
-        if (f.connection.on && (gap < f.connection.min || gap > f.connection.max)) continue;
-        if (f.noOvernight.on && chain[chain.length - 1].arrive.getDate() !== l.depart.getDate()) continue;
-      } else {
-        const h = l.depart.getHours();
-        if (f.departWindow.on && (h < f.departWindow.from || h > f.departWindow.to)) continue;
-        if (f.weekend.on && ![4, 5, 6].includes(l.depart.getDay())) continue;
+function flights(){
+  return ((S.data&&S.data.flights)||[]).map(function(f){
+    return {origin:f.origin,dest:f.dest,depart:new Date(f.depart),arrive:new Date(f.arrive),flightNo:f.flightNo};
+  });
+}
+function presentAirports(){
+  var s={}; flights().forEach(function(f){s[f.origin]=1;s[f.dest]=1;});
+  return Object.keys(s).sort();
+}
+
+function findPaths(fls, origin, dest, f){
+  var byO={}; fls.forEach(function(l){(byO[l.origin]=byO[l.origin]||[]).push(l);});
+  Object.keys(byO).forEach(function(k){byO[k].sort(function(a,b){return a.depart-b.depart;});});
+  var out=[];
+  function walk(here,chain,seen){
+    (byO[here]||[]).forEach(function(l){
+      if(seen[l.dest]) return;
+      if(chain.length){
+        var gap=HOURS(l.depart-chain[chain.length-1].arrive);
+        if(f.connection.on&&(gap<f.connection.min||gap>f.connection.max)) return;
+        if(f.noOvernight.on&&chain[chain.length-1].arrive.getDate()!==l.depart.getDate()) return;
+      }else{
+        var h=l.depart.getHours();
+        if(f.departWindow.on&&(h<f.departWindow.from||h>f.departWindow.to)) return;
+        if(f.weekend.on&&[4,5,6].indexOf(l.depart.getDay())<0) return;
       }
       chain.push(l);
-      if (l.dest === dest) out.push([...chain]);
-      if (chain.length < f.maxLegs) walk(l.dest, chain, new Set([...seen, l.dest]));
+      if(l.dest===dest) out.push(chain.slice());
+      if(chain.length<f.maxLegs){var ns=Object.assign({},seen);ns[l.dest]=1;walk(l.dest,chain,ns);}
       chain.pop();
-    }
-  };
-  walk(origin, [], new Set([origin]));
+    });
+  }
+  var s0={}; s0[origin]=1; walk(origin,[],s0);
   return out;
 }
 
-function Switch({ on, onChange }) {
-  return (
-    <button onClick={() => onChange(!on)} aria-pressed={on}
-      className="relative rounded-full transition-colors shrink-0"
-      style={{ width: 40, height: 22, background: on ? C.wizz : C.line, outlineOffset: 2 }}>
-      <span className="absolute rounded-full bg-white transition-all"
-        style={{ width: 16, height: 16, top: 3, left: on ? 21 : 3 }} />
-    </button>
-  );
-}
-function Filter({ label, hint, on, onToggle, children }) {
-  return (
-    <div className="py-3" style={{ borderBottom: `1px solid ${C.line}` }}>
-      <div className="flex items-center gap-3">
-        <Switch on={on} onChange={onToggle} />
-        <div className="flex-1 min-w-0">
-          <div style={{ fontWeight: 600, fontSize: 14 }}>{label}</div>
-          {hint && <div style={{ fontSize: 12, color: C.muted }}>{hint}</div>}
-        </div>
-      </div>
-      {on && children && <div className="mt-3">{children}</div>}
-    </div>
-  );
-}
-function Code({ children }) {
-  return <span style={{ fontFamily: MONO, fontWeight: 600, letterSpacing: "0.02em" }}>{children}</span>;
-}
-const fmtTime = (d) => d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
-const fmtDay = (d) => d.toLocaleDateString("he-IL", { weekday: "short", day: "numeric", month: "numeric" });
-
-function gcal(legs) {
-  const p = (d) => d.toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
-  const f = legs[0], l = legs[legs.length-1];
-  const text = encodeURIComponent(`טיסה ${f.origin}→${l.dest}`);
-  const det = encodeURIComponent(legs.map(x=>`${x.flightNo}: ${x.origin}→${x.dest} ${fmtTime(x.depart)}–${fmtTime(x.arrive)}`).join("\n"));
-  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${p(f.depart)}/${p(l.arrive)}&details=${det}`;
+function gcal(legs){
+  var p=function(d){return d.toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";};
+  var f=legs[0],l=legs[legs.length-1];
+  var text=encodeURIComponent("טיסה "+f.origin+"→"+l.dest);
+  var det=encodeURIComponent(legs.map(function(x){return x.flightNo+": "+x.origin+"→"+x.dest+" "+fmtTime(x.depart)+"–"+fmtTime(x.arrive);}).join("\n"));
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+text+"&dates="+p(f.depart)+"/"+p(l.arrive)+"&details="+det;
 }
 
-function Strip({ legs }) {
-  const first = legs[0], last = legs[legs.length - 1];
-  const total = HOURS(last.arrive - first.depart);
-  return (
-    <div className="mb-3 overflow-hidden" dir="ltr"
-      style={{ background: C.card, border: `1px solid ${C.line}`, borderRadius: 10 }}>
-      <div className="flex items-stretch">
-        <div style={{ width: 6, background: legs.length > 1 ? C.warn : C.live }} />
-        <div className="flex-1 p-3">
-          {legs.map((l, i) => (
-            <div key={i}>
-              {i > 0 && (
-                <div className="flex items-center gap-2 my-1" style={{ fontSize: 11, color: C.muted, fontFamily: MONO }}>
-                  <span style={{ flex: 1, borderTop: `1px dashed ${C.line}` }} />
-                  <span>{HOURS(l.depart - legs[i - 1].arrive).toFixed(1)}h in {l.origin}</span>
-                  <span style={{ flex: 1, borderTop: `1px dashed ${C.line}` }} />
-                </div>
-              )}
-              <div className="flex items-baseline justify-between gap-2">
-                <div className="flex items-baseline gap-2">
-                  <span style={{ fontFamily: DISPLAY, fontSize: 26, lineHeight: 1 }}>{l.origin}</span>
-                  <span style={{ color: C.muted }}>→</span>
-                  <span style={{ fontFamily: DISPLAY, fontSize: 26, lineHeight: 1 }}>{l.dest}</span>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <Code><span style={{ fontSize: 14 }}>{fmtTime(l.depart)}–{fmtTime(l.arrive)}</span></Code>
-                  <div style={{ fontSize: 11, color: C.muted, fontFamily: MONO }}>
-                    <bdi>{fmtDay(l.depart)}</bdi> · {l.flightNo}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          <div className="flex justify-between items-center mt-2 pt-2"
-            style={{ borderTop: `1px solid ${C.line}`, fontSize: 12, color: C.muted, fontFamily: MONO }}>
-            <span>{total.toFixed(1)}h · €{(legs.length * 9.99).toFixed(2)} · {legs.length} seg</span>
-            <span style={{ display: "flex", gap: 12 }}>
-              <a href={BOOK_URL} target="_blank" rel="noopener"
-                 style={{ color: "#fff", background: C.wizz, padding: "3px 10px", borderRadius: 6, fontWeight: 600, textDecoration: "none" }}>🎟 הזמנה</a>
-              <a href={gcal(legs)} target="_blank" rel="noopener"
-                 style={{ color: C.wizz, fontWeight: 600, textDecoration: "none" }}>📅 יומן</a>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function App() {
-  const [data, setData] = useState(null);
-  const [err, setErr] = useState(false);
-  const load = () => fetch("data.json?t=" + Date.now()).then(r => r.json()).then(setData).catch(() => setErr(true));
-  useEffect(() => { load(); const t = setInterval(load, 120000); return () => clearInterval(t); }, []);
-
-  const flights = useMemo(() => (data?.flights || []).map(f => ({
-    origin: f.origin, dest: f.dest, depart: new Date(f.depart), arrive: new Date(f.arrive), flightNo: f.flightNo,
-  })), [data]);
-  const AIRPORTS = (data && data.airports) || DEFAULT_AIRPORTS;
-  const present = useMemo(() => {
-    const s = new Set(); flights.forEach(f => { s.add(f.origin); s.add(f.dest); });
-    return [...s].sort();
-  }, [flights]);
-  const home = (data && data.home) || "TLV";
-
-  const [mode, setMode] = useState("out");
-  const [from, setFrom] = useState("TLV");
-  const [to, setTo] = useState("BUD");
-  const [maxLegs, setMaxLegs] = useState(2);
-  const [f, setF] = useState({
-    departWindow: { on: false, from: 6, to: 22 },
-    weekend: { on: false },
-    connection: { on: true, min: 3, max: 30 },
-    noOvernight: { on: false },
-    directFirst: { on: true },
-    stay: { on: false, days: [1, 2, 3] },
-    returnRequired: { on: false },
+function stripHTML(legs){
+  var first=legs[0],last=legs[legs.length-1],total=HOURS(last.arrive-first.depart);
+  var body="";
+  legs.forEach(function(l,i){
+    if(i>0){
+      var w=HOURS(l.depart-legs[i-1].arrive).toFixed(1);
+      body+='<div class="lay"><span class="ln"></span><span>'+w+'h in '+l.origin+'</span><span class="ln"></span></div>';
+    }
+    body+='<div class="leg"><div class="od"><span class="ap">'+l.origin+'</span><span class="ar">→</span><span class="ap">'+l.dest+'</span></div>'
+      +'<div><div class="tm">'+fmtTime(l.depart)+'–'+fmtTime(l.arrive)+'</div>'
+      +'<div class="meta"><bdi>'+fmtDay(l.depart)+'</bdi> · '+esc(l.flightNo)+'</div></div></div>';
   });
-  const set = (k, patch) => setF((p) => ({ ...p, [k]: { ...p[k], ...patch } }));
-
-  // land on the destination with the most outbound flights from `from`
-  useEffect(() => {
-    if (!flights.length) return;
-    if (flights.some(fl => fl.origin === from && fl.dest === to)) return;
-    const counts = {};
-    flights.forEach(fl => { if (fl.origin === from) counts[fl.dest] = (counts[fl.dest] || 0) + 1; });
-    const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
-    if (best) setTo(best[0]);
-  }, [flights, from]);
-
-  const results = useMemo(() => {
-    const paths = findPaths(flights, from, to, { ...f, maxLegs });
-    return f.directFirst.on
-      ? [...paths].sort((a, b) => a.length - b.length || a[0].depart - b[0].depart)
-      : [...paths].sort((a, b) => a[0].depart - b[0].depart);
-  }, [flights, from, to, f, maxLegs]);
-
-  const trips = useMemo(() => {
-    if (mode !== "out") return [];
-    const back = findPaths(flights, to, from, { ...f, maxLegs, weekend: { on: false }, departWindow: { on: false } });
-    return results.map((out) => {
-      const arrive = out[out.length - 1].arrive;
-      const returns = back.filter((r) => {
-        if (!f.stay.on) return HOURS(r[0].depart - arrive) >= 6;
-        const nights = Math.max(1, Math.round(HOURS(r[0].depart - arrive) / 24));
-        return f.stay.days.includes(nights) && r[0].depart > arrive;
-      });
-      return { out, returns };
-    }).filter((t) => !f.returnRequired.on || t.returns.length > 0);
-  }, [mode, flights, from, to, f, maxLegs, results]);
-
-  const activeCount = Object.values(f).filter((x) => x.on).length;
-
-  if (err) return (
-    <div dir="rtl" style={{ padding: 30, fontFamily: BODY, color: C.ink, textAlign: "center" }}>
-      <div style={{ fontSize: 40 }}>✈️</div>
-      <p>לא הצלחתי לטעון נתונים. נסה לרענן עוד רגע.</p>
-    </div>
-  );
-  if (!data) return (
-    <div dir="rtl" style={{ padding: 40, fontFamily: BODY, color: C.muted, textAlign: "center" }}>טוען…</div>
-  );
-
-  const updated = new Date(data.updated);
-  const airportOptions = (present.length ? present : Object.keys(AIRPORTS));
-
-  return (
-    <div dir="rtl" style={{ background: C.paper, color: C.ink, fontFamily: BODY, minHeight: "100%" }}>
-      <div className="mx-auto p-4" style={{ maxWidth: 520 }}>
-        <header className="mb-4">
-          <div style={{ fontSize: 11, letterSpacing: "0.18em", color: C.wizz, fontFamily: MONO }}>ALL YOU CAN FLY</div>
-          <h1 style={{ fontFamily: DISPLAY, fontSize: 40, lineHeight: 1, margin: "2px 0" }}>קונסולת חיפוש</h1>
-          <p style={{ fontSize: 13, color: C.muted }}>
-            עודכן {fmtTime(updated)} · {flights.length} טיסות פתוחות · מתעדכן כל 30 דק׳
-          </p>
-        </header>
-
-        <div className="flex gap-2 mb-4">
-          {[["out", "חיפוש יעד"], ["home", "תחזיר אותי הביתה"]].map(([k, label]) => (
-            <button key={k}
-              onClick={() => { setMode(k); if (k === "home") { setTo(home); } else { setFrom(home); } }}
-              className="flex-1 py-2 rounded-lg"
-              style={{ fontSize: 13, fontWeight: 600,
-                background: mode === k ? C.ink : "transparent",
-                color: mode === k ? "#fff" : C.muted,
-                border: `1px solid ${mode === k ? C.ink : C.line}` }}>{label}</button>
-          ))}
-        </div>
-
-        <div className="flex gap-2 mb-4">
-          {[["מאיפה", from, setFrom], ["לאן", to, setTo]].map(([label, val, setter]) => (
-            <label key={label} className="flex-1">
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>{label}</div>
-              <select value={val} onChange={(e) => setter(e.target.value)} className="w-full p-2 rounded-lg"
-                style={{ background: C.card, border: `1px solid ${C.line}`, fontFamily: MONO, fontSize: 14 }}>
-                {airportOptions.map((code) => (
-                  <option key={code} value={code}>{code} · {AIRPORTS[code] || code}</option>
-                ))}
-              </select>
-            </label>
-          ))}
-        </div>
-
-        <section className="mb-4 p-4 rounded-xl" style={{ background: C.card, border: `1px solid ${C.line}` }}>
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 style={{ fontFamily: DISPLAY, fontSize: 22 }}>פילטרים</h2>
-            <span style={{ fontSize: 11, color: C.muted, fontFamily: MONO }}>{activeCount} פעילים</span>
-          </div>
-
-          <Filter label="שעת המראה" hint="רק טיסות שיוצאות בטווח הזה"
-            on={f.departWindow.on} onToggle={(v) => set("departWindow", { on: v })}>
-            <div dir="ltr" className="flex items-center gap-2" style={{ fontFamily: MONO, fontSize: 13 }}>
-              <input type="range" min="0" max="23" value={f.departWindow.from}
-                onChange={(e) => set("departWindow", { from: +e.target.value })} className="flex-1" />
-              <span>{String(f.departWindow.from).padStart(2,"0")}:00–{String(f.departWindow.to).padStart(2,"0")}:00</span>
-              <input type="range" min="0" max="23" value={f.departWindow.to}
-                onChange={(e) => set("departWindow", { to: +e.target.value })} className="flex-1" />
-            </div>
-          </Filter>
-
-          <Filter label="סופ״ש בלבד" hint="יציאה בחמישי, שישי או שבת"
-            on={f.weekend.on} onToggle={(v) => set("weekend", { on: v })} />
-
-          <Filter label="זמן חיבור" hint="הרגליים הן הזמנות נפרדות — אין הגנה על החיבור"
-            on={f.connection.on} onToggle={(v) => set("connection", { on: v })}>
-            <div dir="ltr" className="flex items-center gap-2" style={{ fontFamily: MONO, fontSize: 13 }}>
-              <span>min</span>
-              <input type="range" min="1" max="12" value={f.connection.min}
-                onChange={(e) => set("connection", { min: +e.target.value })} className="flex-1" />
-              <span>{f.connection.min}h</span>
-            </div>
-          </Filter>
-
-          <Filter label="בלי לינה בשדה" hint="פוסל חיבורים שחוצים חצות"
-            on={f.noOvernight.on} onToggle={(v) => set("noOvernight", { on: v })} />
-          <Filter label="ישירות קודם" hint="ממיין מסלולים קצרים למעלה"
-            on={f.directFirst.on} onToggle={(v) => set("directFirst", { on: v })} />
-          <Filter label="רק עם חזרה זמינה" hint="מסתיר כל הלוך שאין לו טיסת חזרה פתוחה עכשיו"
-            on={f.returnRequired.on} onToggle={(v) => set("returnRequired", { on: v })} />
-
-          <Filter label="משך שהות ביעד" hint="כמה לילות ביעד"
-            on={f.stay.on} onToggle={(v) => set("stay", { on: v })}>
-            <div className="flex gap-1 flex-wrap">
-              {[1, 2, 3, 4, 5, 7].map((d) => {
-                const active = f.stay.days.includes(d);
-                return (
-                  <button key={d}
-                    onClick={() => set("stay", { days: active ? f.stay.days.filter((x) => x !== d) : [...f.stay.days, d] })}
-                    className="py-2 rounded-lg"
-                    style={{ flex: "1 0 40px", fontFamily: MONO, fontSize: 13,
-                      background: active ? C.wizz : "transparent", color: active ? "#fff" : C.muted,
-                      border: `1px solid ${active ? C.wizz : C.line}` }}>{d}</button>
-                );
-              })}
-            </div>
-          </Filter>
-
-          <div className="pt-3">
-            <div style={{ fontSize: 12, color: C.muted, marginBottom: 6 }}>מקסימום קפיצות</div>
-            <div className="flex gap-2">
-              {[1, 2, 3].map((n) => (
-                <button key={n} onClick={() => setMaxLegs(n)} className="flex-1 py-2 rounded-lg"
-                  style={{ fontFamily: MONO, fontSize: 14,
-                    background: maxLegs === n ? C.ink : "transparent", color: maxLegs === n ? "#fff" : C.muted,
-                    border: `1px solid ${maxLegs === n ? C.ink : C.line}` }}>{n}</button>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <div className="flex items-baseline justify-between mb-2">
-          <h2 style={{ fontFamily: DISPLAY, fontSize: 22 }}>{mode === "out" ? trips.length : results.length} מסלולים</h2>
-          <span style={{ fontSize: 11, color: C.muted, fontFamily: MONO }}>{from} → {to}</span>
-        </div>
-
-        {(mode === "out" ? trips.length : results.length) === 0 ? (
-          <div className="p-4 rounded-xl" style={{ background: C.warnBg, border: `1px solid ${C.warn}33`, fontSize: 13 }}>
-            אין מסלול שעובר את הפילטרים. נסה לכבות "בלי לינה בשדה", להוריד "זמן חיבור", או להעלות מקסימום קפיצות.
-          </div>
-        ) : mode === "out" ? (
-          trips.map(({ out, returns }, i) => (
-            <div key={i} className="mb-5">
-              <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, marginBottom: 4 }}>הלוך</div>
-              <Strip legs={out} />
-              <div style={{ fontSize: 11, fontFamily: MONO, color: C.muted, margin: "10px 0 4px" }}>
-                חזור · {returns.length} אופציות
-              </div>
-              {returns.length === 0 ? (
-                <div className="p-3 rounded-lg" style={{ background: C.warnBg, fontSize: 12, color: C.warn }}>
-                  החזרה עדיין מחוץ לחלון ה-72 שעות. הבוט יעדכן כשתיפתח.
-                </div>
-              ) : returns.slice(0, 4).map((r, j) => <Strip key={j} legs={r} />)}
-            </div>
-          ))
-        ) : (
-          results.map((legs, i) => <Strip key={i} legs={legs} />)
-        )}
-
-        <footer style={{ textAlign: "center", color: C.muted, fontSize: 11, fontFamily: MONO, padding: "20px 0" }}>
-          Wizz AYCF · חלון הזמנות 72 שעות · כל רגל הזמנה נפרדת €9.99
-        </footer>
-      </div>
-    </div>
-  );
+  return '<div class="strip'+(legs.length>1?' multi':'')+'"><div class="bar"></div><div class="in">'+body
+    +'<div class="foot"><span>'+total.toFixed(1)+'h · €'+(legs.length*9.99).toFixed(2)+' · '+legs.length+' seg</span>'
+    +'<span class="acts"><a class="book" href="'+BOOK_URL+'" target="_blank" rel="noopener">🎟 הזמנה</a>'
+    +'<a class="cal" href="'+gcal(legs)+'" target="_blank" rel="noopener">📅 יומן</a></span></div></div></div>';
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+function results(){
+  var f=Object.assign({},S.f,{maxLegs:S.maxLegs});
+  var paths=findPaths(flights(),S.from,S.to,f);
+  paths.sort(S.f.directFirst.on
+    ? function(a,b){return a.length-b.length||a[0].depart-b[0].depart;}
+    : function(a,b){return a[0].depart-b[0].depart;});
+  return paths;
+}
+function trips(){
+  var f=Object.assign({},S.f,{maxLegs:S.maxLegs});
+  var back=findPaths(flights(),S.to,S.from,Object.assign({},f,{weekend:{on:false},departWindow:{on:false}}));
+  return results().map(function(out){
+    var arrive=out[out.length-1].arrive;
+    var returns=back.filter(function(r){
+      if(r[0].depart<=arrive) return false;
+      if(!S.f.stay.on) return HOURS(r[0].depart-arrive)>=6;
+      var nights=Math.max(1,Math.round(HOURS(r[0].depart-arrive)/24));
+      return S.f.stay.days.indexOf(nights)>=0;
+    });
+    return {out:out,returns:returns};
+  }).filter(function(t){return !S.f.returnRequired.on||t.returns.length>0;});
+}
+
+function filterRow(key,label,hint,extra){
+  var on=S.f[key].on;
+  return '<div class="flt"><button class="sw'+(on?' on':'')+'" data-toggle="'+key+'"><i></i></button>'
+    +'<div class="txt"><div class="lbl">'+label+'</div><div class="hint">'+hint+'</div>'
+    +(on&&extra?'<div class="extra">'+extra+'</div>':'')+'</div></div>';
+}
+
+function render(){
+  var app=document.getElementById("app");
+  if(S.err){app.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:40px">✈️</div><p>לא הצלחתי לטעון נתונים. נסה לרענן.</p></div>';return;}
+  if(!S.data){app.innerHTML='<p style="color:var(--muted);text-align:center;padding:40px">טוען…</p>';return;}
+
+  var fls=flights(), pres=presentAirports();
+  var opts=(pres.length?pres:Object.keys(airports())).map(function(c){
+    return '<option value="'+c+'">'+c+' · '+esc(apName(c))+'</option>';}).join("");
+  var updated=new Date(S.data.updated);
+
+  var list, count;
+  if(S.mode==="out"){
+    var ts=trips(); count=ts.length;
+    list=ts.length? ts.map(function(t){
+      var back = t.returns.length
+        ? t.returns.slice(0,4).map(stripHTML).join("")
+        : '<div class="note">החזרה עדיין מחוץ לחלון ה-72 שעות. הבוט יעדכן כשתיפתח.</div>';
+      return '<div style="margin-bottom:20px"><div class="tag">הלוך</div>'+stripHTML(t.out)
+        +'<div class="tag">חזור · '+t.returns.length+' אופציות</div>'+back+'</div>';
+    }).join("") : "";
+  }else{
+    var rs=results(); count=rs.length;
+    list=rs.map(stripHTML).join("");
+  }
+  if(!count) list='<div class="empty">אין מסלול שעובר את הפילטרים. נסה לכבות "בלי לינה בשדה", להוריד "זמן חיבור", או להעלות מקסימום קפיצות.</div>';
+
+  var active=Object.keys(S.f).filter(function(k){return S.f[k].on;}).length;
+  var dw=S.f.departWindow, cn=S.f.connection;
+
+  app.innerHTML=''
+  +'<header class="mb4"><div class="eyebrow">ALL YOU CAN FLY</div><h1>קונסולת חיפוש</h1>'
+  +'<p class="sub">עודכן '+fmtTime(updated)+' · '+fls.length+' טיסות פתוחות · מתעדכן כל 30 דק׳</p></header>'
+
+  +'<div class="row mb4">'
+    +'<button class="seg'+(S.mode==="out"?" on":"")+'" data-mode="out">חיפוש יעד</button>'
+    +'<button class="seg'+(S.mode==="home"?" on":"")+'" data-mode="home">תחזיר אותי הביתה</button></div>'
+
+  +'<div class="row mb4">'
+    +'<label class="fld"><div class="lab">מאיפה</div><select data-set="from">'+opts.replace('value="'+S.from+'"','value="'+S.from+'" selected')+'</select></label>'
+    +'<label class="fld"><div class="lab">לאן</div><select data-set="to">'+opts.replace('value="'+S.to+'"','value="'+S.to+'" selected')+'</select></label></div>'
+
+  +'<section class="panel mb4">'
+    +'<div class="row" style="justify-content:space-between;align-items:baseline;margin-bottom:4px"><h2>פילטרים</h2><span class="count">'+active+' פעילים</span></div>'
+    +filterRow("weekend","סופ״ש בלבד","יציאה בחמישי, שישי או שבת","")
+    +filterRow("stay","משך שהות ביעד","כמה לילות ביעד",
+        '<div class="chips">'+[1,2,3,4,5,7].map(function(d){return '<button class="chip'+(S.f.stay.days.indexOf(d)>=0?" on":"")+'" data-stay="'+d+'">'+d+'</button>';}).join("")+'</div>')
+    +filterRow("departWindow","שעת המראה","רק טיסות שיוצאות בטווח הזה",
+        '<div dir="ltr" class="row" style="align-items:center;font-family:var(--mono);font-size:13px">'
+        +'<input type="range" min="0" max="23" value="'+dw.from+'" data-range="departWindow.from"><span>'+String(dw.from).padStart(2,"0")+':00–'+String(dw.to).padStart(2,"0")+':00</span>'
+        +'<input type="range" min="0" max="23" value="'+dw.to+'" data-range="departWindow.to"></div>')
+    +filterRow("connection","זמן חיבור","הרגליים הן הזמנות נפרדות — אין הגנה על החיבור",
+        '<div dir="ltr" class="row" style="align-items:center;font-family:var(--mono);font-size:13px"><span>min</span>'
+        +'<input type="range" min="1" max="12" value="'+cn.min+'" data-range="connection.min"><span>'+cn.min+'h</span></div>')
+    +filterRow("noOvernight","בלי לינה בשדה","פוסל חיבורים שחוצים חצות","")
+    +filterRow("directFirst","ישירות קודם","ממיין מסלולים קצרים למעלה","")
+    +filterRow("returnRequired","רק עם חזרה זמינה","מסתיר כל הלוך שאין לו טיסת חזרה פתוחה עכשיו","")
+    +'<div style="padding-top:12px"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">מקסימום קפיצות</div>'
+    +'<div class="chips">'+[1,2,3].map(function(n){return '<button class="chip ink'+(S.maxLegs===n?" on":"")+'" data-legs="'+n+'">'+n+'</button>';}).join("")+'</div></div>'
+  +'</section>'
+
+  +'<div class="row" style="justify-content:space-between;align-items:baseline;margin-bottom:8px"><h2 style="font-family:var(--disp);font-size:22px;margin:0">'+count+' מסלולים</h2><span class="count">'+S.from+' → '+S.to+'</span></div>'
+  +list
+  +'<footer>Wizz AYCF · חלון הזמנות 72 שעות · כל רגל הזמנה נפרדת €9.99</footer>';
+
+  wire();
+}
+
+function wire(){
+  var app=document.getElementById("app");
+  app.querySelectorAll("[data-mode]").forEach(function(b){b.onclick=function(){
+    S.mode=b.getAttribute("data-mode");
+    if(S.mode==="home"){S.to=(S.data&&S.data.home)||"TLV";} else {S.from=(S.data&&S.data.home)||"TLV";}
+    render();};});
+  app.querySelectorAll("[data-toggle]").forEach(function(b){b.onclick=function(){
+    var k=b.getAttribute("data-toggle"); S.f[k].on=!S.f[k].on; render();};});
+  app.querySelectorAll("[data-set]").forEach(function(s){s.onchange=function(){
+    S[s.getAttribute("data-set")]=s.value; render();};});
+  app.querySelectorAll("[data-legs]").forEach(function(b){b.onclick=function(){
+    S.maxLegs=+b.getAttribute("data-legs"); render();};});
+  app.querySelectorAll("[data-stay]").forEach(function(b){b.onclick=function(){
+    var d=+b.getAttribute("data-stay"); var i=S.f.stay.days.indexOf(d);
+    if(i>=0)S.f.stay.days.splice(i,1); else S.f.stay.days.push(d); render();};});
+  app.querySelectorAll("[data-range]").forEach(function(r){r.oninput=function(){
+    var p=r.getAttribute("data-range").split("."); S.f[p[0]][p[1]]=+r.value; render();};});
+}
+
+function pickDefaultTo(){
+  var fls=flights(); if(!fls.length) return;
+  var hasRoute=fls.some(function(f){return f.origin===S.from&&f.dest===S.to;});
+  if(hasRoute) return;
+  var c={}; fls.forEach(function(f){if(f.origin===S.from)c[f.dest]=(c[f.dest]||0)+1;});
+  var best=Object.keys(c).sort(function(a,b){return c[b]-c[a];})[0];
+  if(best) S.to=best;
+}
+
+function load(){
+  fetch("data.json?t="+Date.now()).then(function(r){return r.json();}).then(function(d){
+    S.data=d; S.err=false; pickDefaultTo(); render();
+  }).catch(function(){S.err=true;render();});
+}
+load();
+setInterval(load,120000);
 </script>
 </body>
 </html>
