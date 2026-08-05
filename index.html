@@ -27,6 +27,7 @@ const C = { paper:"#EDF0F4", card:"#FFFFFF", ink:"#141B2D", muted:"#6B7689",
 const MONO = "'IBM Plex Mono', ui-monospace, monospace";
 const DISPLAY = "'Barlow Condensed', 'Arial Narrow', sans-serif";
 const BODY = "'Inter', system-ui, sans-serif";
+const BOOK_URL = "https://multipass.wizzair.com/w6/subscriptions/spa/private-page/wallets";
 const DEFAULT_AIRPORTS = { TLV:"תל אביב", FCO:"רומא", BUD:"בודפשט", ATH:"אתונה",
   MXP:"מילאנו", LCA:"לרנקה", OTP:"בוקרשט", SOF:"סופיה", KRK:"קרקוב", KTW:"קטוביץ",
   WAW:"ורשה", GDN:"גדנסק", NAP:"נאפולי", CDG:"פריז", BCN:"ברצלונה", VIE:"וינה" };
@@ -134,8 +135,12 @@ function Strip({ legs }) {
           <div className="flex justify-between items-center mt-2 pt-2"
             style={{ borderTop: `1px solid ${C.line}`, fontSize: 12, color: C.muted, fontFamily: MONO }}>
             <span>{total.toFixed(1)}h · €{(legs.length * 9.99).toFixed(2)} · {legs.length} seg</span>
-            <a href={gcal(legs)} target="_blank" rel="noopener"
-               style={{ color: C.wizz, fontWeight: 600, textDecoration: "none" }}>📅 יומן</a>
+            <span style={{ display: "flex", gap: 12 }}>
+              <a href={BOOK_URL} target="_blank" rel="noopener"
+                 style={{ color: "#fff", background: C.wizz, padding: "3px 10px", borderRadius: 6, fontWeight: 600, textDecoration: "none" }}>🎟 הזמנה</a>
+              <a href={gcal(legs)} target="_blank" rel="noopener"
+                 style={{ color: C.wizz, fontWeight: 600, textDecoration: "none" }}>📅 יומן</a>
+            </span>
           </div>
         </div>
       </div>
